@@ -215,7 +215,7 @@ public class HunterAndWumpusText {
 				move();
 				if (gameOver())
 				{
-					System.out.println("GAMEOVER!");
+					System.out.println(gameOverMessage());
 					break;
 				}
 				else
@@ -223,6 +223,7 @@ public class HunterAndWumpusText {
 					System.out.println(testDung1.toString());
 				}
 			}
+			
 				
 	}
 	
@@ -442,5 +443,26 @@ public class HunterAndWumpusText {
 		
 		return gameover;
 		
+	}
+	
+	public static String gameOverMessage(){
+		
+		String message = "";
+		
+		if (dungeon[hunterRow][hunterCol].hasWumpus)
+		{
+			message="You've been eaten by the Wumpus. gg";
+		}
+		
+		else if (dungeon[hunterRow][hunterCol].hasPit)
+		{
+			message="You fell into the pit and died. get wrecked";
+		}
+		else
+		{
+			message="WHYULOSE?";
+		}
+		
+		return message;
 	}
 }
