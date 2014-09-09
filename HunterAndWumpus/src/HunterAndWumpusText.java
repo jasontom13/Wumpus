@@ -1,3 +1,19 @@
+/* Name: HunterAndWumpusText
+ * Authors: Jason Tom, Trevor Fasulo
+ * Class: CSc 335
+ * Teacher: Rick Mercer
+ * Due Date: 9/10/14 11:59PM
+ * 
+ * Description: This class is designed to create a dungeon (2D Array of Rooms), where the
+ * Room objects are a private class within the HunterAndWumpusText class.  The Room objects
+ * which populate the dungeon hold the state of each room, (i.e. if the room has blood, slime,
+ * goop, the wumpus, a pit, or the hunter).  HunterAndWumpusText randomizes the locations of the
+ * wumpus, hunter, and pits using the Random class and then fills the blood, slime, and goop based
+ * on the locations of the pits and wumpus respectively.  This class also has a move() method
+ * which gets user input and moves the hunter through the dungeon based on four move options:
+ * up, down, left, right.
+ */
+
 import java.util.Random;
 import java.util.Scanner;
 
@@ -15,6 +31,7 @@ public class HunterAndWumpusText {
 		private final int row;
 		private final int col;
 		
+		/* Room constructor: initializes the room's state to empty */
 		public Room(int row, int col){
 			
 			this.row = row;
@@ -45,7 +62,13 @@ public class HunterAndWumpusText {
 	static int boardSize;
 	static int hunterRow;
 	static int hunterCol;
+	static int wumpusRow;
+	static int wumpusCol;
 	
+	
+	/* HunterAndWumpusText Constructor: This method is used to create the dungeon using
+	 * a predetermined dungeon size and known pit/wumpus/hunter/slime/blood/goop locations.
+	 */
 	public HunterAndWumpusText(String[][] map){
 		
 		dungeon = new Room[map.length][map[0].length];
@@ -64,6 +87,9 @@ public class HunterAndWumpusText {
 		setHunter(dungeon);
 	}
 	
+	/* HunterAndWumpusText Constructor: This method is used to create a dungeon using
+	 * user input for dungeon size and randomized pit/wumpus/hunter/slime/blood/goop locations.
+	 */
 	public HunterAndWumpusText(){
 		
 		Scanner keyBoard = new Scanner(System.in);
@@ -175,9 +201,10 @@ public class HunterAndWumpusText {
 	
 	public void setHunter(Room[][] map){
 		
-		hunterRow = generator.nextInt(dungeon.length);
-		hunterCol = generator.nextInt(dungeon[0].length);
+		
 		while(hunterCount()<1){
+			hunterRow = generator.nextInt(dungeon.length);
+			hunterCol = generator.nextInt(dungeon[0].length);
 			if(dungeon[hunterRow][hunterCol].hasWumpus 
 					|| dungeon[hunterRow][hunterCol].hasPit 
 					|| dungeon[hunterRow][hunterCol].hasSlime 
@@ -206,43 +233,46 @@ public class HunterAndWumpusText {
 
 	public void setWumpus(Room[][] map){
 		
-		int randomRow = generator.nextInt(dungeon.length);
-		int randomCol = generator.nextInt(dungeon[0].length);
-		dungeon[randomRow][randomCol].isVisible = true;
-		dungeon[randomRow][randomCol].hasWumpus = true;
+		wumpusRow = generator.nextInt(dungeon.length);
+		wumpusCol = generator.nextInt(dungeon[0].length);
+		dungeon[wumpusRow][wumpusCol].isVisible = true;
+		dungeon[wumpusRow][wumpusCol].hasWumpus = true;
 	}
 	
 	public void setBlood(Room[][] map){
 		
-		int wumpusRow=0;
-		int wumpusCol=0;
-		for(int i=0; i<dungeon.length;i++){
-			for(int j=0;j<dungeon[0].length;j++){
-				if(dungeon[i][j].hasWumpus){
-					wumpusRow = i;
-					wumpusCol = j;
-				}
-			}
-		}
+//		int wumpusRow=0;
+//		int wumpusCol=0;
+//		for(int i=0; i<dungeon.length;i++){
+//			for(int j=0;j<dungeon[0].length;j++){
+//				if(dungeon[i][j].hasWumpus){
+//					wumpusRow = i;
+//					wumpusCol = j;
+//				}
+//			}
+//		}
+		
+//		hunterRow=(hunterRow-1+boardSize)%boardSize;
+//		hunterRow=(hunterRow+1)%boardSize;
 		
 		dungeon[(wumpusRow+2)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow+2)%boardSize][wumpusCol].hasBlood = true;
-		dungeon[wumpusRow][(wumpusCol+2)%boardSize].isVisible = true;
-		dungeon[wumpusRow][(wumpusCol+2)%boardSize].hasBlood = true;
 		dungeon[(wumpusRow+1)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow+1)%boardSize][wumpusCol].hasBlood = true;
+		dungeon[wumpusRow][(wumpusCol+2)%boardSize].isVisible = true;
+		dungeon[wumpusRow][(wumpusCol+2)%boardSize].hasBlood = true;
 		dungeon[wumpusRow][(wumpusCol+1)%boardSize].isVisible = true;
 		dungeon[wumpusRow][(wumpusCol+1)%boardSize].hasBlood = true;
 		dungeon[(wumpusRow-1+boardSize)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow-1+boardSize)%boardSize][wumpusCol].hasBlood = true;
-		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
-		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
 		dungeon[(wumpusRow-2+boardSize)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow-2+boardSize)%boardSize][wumpusCol].hasBlood = true;
+		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
+		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
 		dungeon[wumpusRow][(wumpusCol-2+boardSize)%boardSize].isVisible = true;
 		dungeon[wumpusRow][(wumpusCol-2+boardSize)%boardSize].hasBlood = true;
-		dungeon[(wumpusRow-1)%boardSize][(wumpusCol-1)%boardSize].isVisible = true;
-		dungeon[(wumpusRow-1)%boardSize][(wumpusCol-1)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
+		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
 		dungeon[(wumpusRow+1)%boardSize][(wumpusCol+1)%boardSize].isVisible = true;
 		dungeon[(wumpusRow+1)%boardSize][(wumpusCol+1)%boardSize].hasBlood = true;
 		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol+1)%boardSize].isVisible = true;

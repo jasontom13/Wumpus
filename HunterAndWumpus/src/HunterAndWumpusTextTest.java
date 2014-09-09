@@ -1,3 +1,12 @@
+/* Name: HunterAndWumpusTextTest
+ * Authors: Jason Tom, Trevor Fasulo
+ * Class: CSc 335
+ * Teacher: Rick Mercer
+ * Due Date: 9/10/14 11:59PM
+ * 
+ * Description: This class is used to test a static version of the HunterAndWumpusText pre-made
+ * dungeon.  
+ */
 import static org.junit.Assert.*;
 
 import org.junit.Test;
