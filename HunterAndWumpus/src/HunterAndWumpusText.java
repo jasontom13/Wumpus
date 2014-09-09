@@ -120,19 +120,33 @@ public class HunterAndWumpusText {
 	public String toString(){
 		
 		String mapString = "";
+		String message = "";
 		
 		for(int i = 0; i < dungeon.length; i++){
 			for(int j = 0; j < dungeon[0].length; j++){
 				
 				if(dungeon[i][j].isVisible){
-					if(dungeon[i][j].hasWumpus){
+					if(dungeon[i][j].hasHunter){
+						mapString = mapString + "[O] ";
+						if (dungeon[i][j].hasGoop)
+						{
+							message="Looks like there's goop on the floor...";
+						}
+						else if (dungeon[i][j].hasBlood)
+						{
+							message="Looks like there's blood on the floor...";
+						}
+						else if (dungeon[i][j].hasSlime)
+						{
+							message="Looks like there's slime on the floor...";
+						}
+						
+					}
+					else if(dungeon[i][j].hasWumpus){
 						mapString = mapString + "[W] ";
 					}
 					else if(dungeon[i][j].hasPit){
 						mapString = mapString + "[P] ";
-					}
-					else if(dungeon[i][j].hasHunter){
-						mapString = mapString + "[O] ";
 					}
 					else if(dungeon[i][j].hasGoop){
 						mapString = mapString + "[G] ";
@@ -153,6 +167,11 @@ public class HunterAndWumpusText {
 			}
 			
 			mapString = mapString + "\n";
+		}
+		
+		if (!message.equals(""))
+		{
+			mapString = mapString + "\n" + message + "\n";
 		}
 		
 		return mapString;
@@ -194,7 +213,15 @@ public class HunterAndWumpusText {
 			
 			while(i<100){
 				move();
-				System.out.println(testDung1.toString());
+				if (gameOver())
+				{
+					System.out.println("GAMEOVER!");
+					break;
+				}
+				else
+				{
+					System.out.println(testDung1.toString());
+				}
 			}
 				
 	}
@@ -240,20 +267,6 @@ public class HunterAndWumpusText {
 	}
 	
 	public void setBlood(Room[][] map){
-		
-//		int wumpusRow=0;
-//		int wumpusCol=0;
-//		for(int i=0; i<dungeon.length;i++){
-//			for(int j=0;j<dungeon[0].length;j++){
-//				if(dungeon[i][j].hasWumpus){
-//					wumpusRow = i;
-//					wumpusCol = j;
-//				}
-//			}
-//		}
-		
-//		hunterRow=(hunterRow-1+boardSize)%boardSize;
-//		hunterRow=(hunterRow+1)%boardSize;
 		
 		dungeon[(wumpusRow+2)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow+2)%boardSize][wumpusCol].hasBlood = true;
@@ -411,5 +424,23 @@ public class HunterAndWumpusText {
 		}
 
 		return direction;
+	}
+	
+	public static boolean gameOver(){
+		
+		boolean gameover=false;
+		
+		if (dungeon[hunterRow][hunterCol].hasWumpus)
+		{
+			gameover=true;
+		}
+		
+		else if (dungeon[hunterRow][hunterCol].hasPit)
+		{
+			gameover=true;
+		}
+		
+		return gameover;
+		
 	}
 }
