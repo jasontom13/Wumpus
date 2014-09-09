@@ -31,7 +31,21 @@ public class HunterAndWumpusText {
 		}
 	}
 	
-	private Room[][] dungeon;
+	/* JASON: I changed randomRow/Col for setHunter() to hunterRow/Col and 
+	 * made hunterRow/Col a global variable so that I could change the hunter's
+	 * position with move(), I also made boardSize global so i could access the 
+	 * size of the board before it got initialized.  I also updated the randompitnumber
+	 * formula so it made it choose a random number between 3-5.  I also changed
+	 * a couple other things, so if something looks different, it was probably me.
+	 * The program should still run fine.  Run it to see how I changed it, all I really
+	 * did was add a loop to keep running move() for testing purposes.  It moves the O
+	 * around with wraparound.
+	 */
+	private static Room[][] dungeon;
+	static int boardSize;
+	Random generator = new Random();
+	static int hunterRow;
+	static int hunterCol;
 	
 	public HunterAndWumpusText(String[][] map){
 		
@@ -50,7 +64,7 @@ public class HunterAndWumpusText {
 	
 	public HunterAndWumpusText(){
 		
-		int boardSize;
+		
 		Scanner keyBoard = new Scanner(System.in);
 	
 		System.out.println("Enter dungeon size 10 or greater:");
@@ -60,7 +74,7 @@ public class HunterAndWumpusText {
 			boardSize = keyBoard.nextInt();
 		}
 		
-		keyBoard.close();
+		
 		
 		dungeon = new Room[boardSize][boardSize];
 		
@@ -148,24 +162,30 @@ public class HunterAndWumpusText {
 		
 			HunterAndWumpusText testDung1 = new HunterAndWumpusText();
 			System.out.println(testDung1.toString());
+			int i=0;
+			
+			while(i<100){
+				move();
+				System.out.println(testDung1.toString());
+			}
+				
 	}
 	
 	public void setHunter(Room[][] map){
 		
-		Random generator = new Random();
-		int randomRow = generator.nextInt(dungeon.length);
-		int randomCol = generator.nextInt(dungeon[0].length);
+		hunterRow = generator.nextInt(dungeon.length);
+		hunterCol = generator.nextInt(dungeon[0].length);
 		while(hunterCount()<1){
-			if(dungeon[randomRow][randomCol].hasWumpus 
-					|| dungeon[randomRow][randomCol].hasPit 
-					|| dungeon[randomRow][randomCol].hasSlime 
-					|| dungeon[randomRow][randomCol].hasGoop 
-					|| dungeon[randomRow][randomCol].hasBlood){
+			if(dungeon[hunterRow][hunterCol].hasWumpus 
+					|| dungeon[hunterRow][hunterCol].hasPit 
+					|| dungeon[hunterRow][hunterCol].hasSlime 
+					|| dungeon[hunterRow][hunterCol].hasGoop 
+					|| dungeon[hunterRow][hunterCol].hasBlood){
 				//do nothing try again to be on a safe spot
 			}
 			else{
-				dungeon[randomRow][randomCol].isVisible = true;
-				dungeon[randomRow][randomCol].hasHunter = true;
+				dungeon[hunterRow][hunterCol].isVisible = true;
+				dungeon[hunterRow][hunterCol].hasHunter = true;
 			}
 		}
 	}
@@ -199,7 +219,8 @@ public class HunterAndWumpusText {
 	public void setSlimePits(Room[][] map){
 		
 		Random generator = new Random();
-		int randomPitNumber = generator.nextInt(3) + 3; //generate a random number between 3 and 5 pits
+		int randomPitNumber = generator.nextInt((5 - 3) + 1) + 3;
+		//int randomPitNumber = generator.nextInt(3) + 3; //generate a random number between 3 and 5 pits
 		int totalPits = 0;
 		
 		while(totalPits<randomPitNumber){
@@ -234,4 +255,80 @@ public class HunterAndWumpusText {
 		
 		return true;
 	}
+	
+	public static void move(){
+		
+		String direction;
+		direction=getDirection();
+		
+		if (direction.equals("up"))
+		{
+			dungeon[hunterRow][hunterCol].hasHunter = false;
+			hunterRow=(hunterRow-1+boardSize)%boardSize;
+			
+			System.out.println(hunterRow);
+			dungeon[hunterRow][hunterCol].isVisible = true;
+			dungeon[hunterRow][hunterCol].hasHunter = true;
+			
+		}
+		
+		else if (direction.equals("down"))
+		{
+			dungeon[hunterRow][hunterCol].hasHunter = false;
+			hunterRow=(hunterRow+1)%boardSize;
+			System.out.println(hunterRow);
+			dungeon[hunterRow][hunterCol].isVisible = true;
+			dungeon[hunterRow][hunterCol].hasHunter = true;
+		}
+		
+		else if (direction.equals("right"))
+		{
+			dungeon[hunterRow][hunterCol].hasHunter = false;
+			hunterCol=(hunterCol+1)%boardSize;
+			System.out.println(hunterCol);
+			dungeon[hunterRow][hunterCol].isVisible = true;
+			dungeon[hunterRow][hunterCol].hasHunter = true;
+		}
+		
+		else
+		{
+			dungeon[hunterRow][hunterCol].hasHunter = false;
+			hunterCol=(hunterCol-1+boardSize)%boardSize;
+			System.out.println(hunterCol);
+			dungeon[hunterRow][hunterCol].isVisible = true;
+			dungeon[hunterRow][hunterCol].hasHunter = true;
+		}
+
+		
+		
+	}
+	
+	/* getDirection() prompts the player for a direction and then returns the direction
+	 * that the user wants to go.  It checks that the direction is: up,down,left, or right.
+	 */
+	public static String getDirection(){
+		
+		Scanner keyboard = new Scanner(System.in);
+		String direction="";
+		
+		
+		System.out.print("Which direction would you like to go? (up, down, left, right): ");
+		direction=keyboard.nextLine();
+		direction=direction.toLowerCase();
+	
+		
+		while (!direction.equals("up") && !direction.equals("down") && !direction.equals("left") && !direction.equals("right"))
+		{
+		
+			System.out.println("That is not a valid direction, please enter a valid direction.");
+			System.out.print("Which direction would you like to go? (up, down, left, right): ");
+			direction=keyboard.nextLine();
+			direction=direction.toLowerCase();
+		}
+
+		return direction;
+		
+	}
+	
+	
 }
