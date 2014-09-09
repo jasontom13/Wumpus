@@ -12,11 +12,10 @@ public class HunterAndWumpusText {
 		private boolean hasPit;
 		private boolean hasHunter;
 		private boolean isVisible;
-		//private String displayValue;
 		private final int row;
 		private final int col;
 		
-		public Room(/*String displayValue, */int row, int col){
+		public Room(int row, int col){
 			
 			this.row = row;
 			this.col = col;
@@ -27,7 +26,6 @@ public class HunterAndWumpusText {
 			hasPit = false;
 			hasHunter = false;
 			isVisible = false;
-			//this.displayValue = displayValue;
 		}
 	}
 	
@@ -41,9 +39,10 @@ public class HunterAndWumpusText {
 	 * did was add a loop to keep running move() for testing purposes.  It moves the O
 	 * around with wraparound.
 	 */
+	
 	private static Room[][] dungeon;
-	static int boardSize;
 	Random generator = new Random();
+	static int boardSize;
 	static int hunterRow;
 	static int hunterCol;
 	
@@ -58,12 +57,14 @@ public class HunterAndWumpusText {
 		}
 		
 		setWumpus(dungeon);
+		setBlood(dungeon);
 		setSlimePits(dungeon);
+		setSlime(dungeon);
+		setGoop(dungeon);
 		setHunter(dungeon);
 	}
 	
 	public HunterAndWumpusText(){
-		
 		
 		Scanner keyBoard = new Scanner(System.in);
 	
@@ -74,8 +75,6 @@ public class HunterAndWumpusText {
 			boardSize = keyBoard.nextInt();
 		}
 		
-		
-		
 		dungeon = new Room[boardSize][boardSize];
 		
 		for(int i = 0; i < boardSize; i++){
@@ -85,7 +84,10 @@ public class HunterAndWumpusText {
 		}
 		
 		setWumpus(dungeon);
+		setBlood(dungeon);
 		setSlimePits(dungeon);
+		setSlime(dungeon);
+		setGoop(dungeon);
 		setHunter(dungeon);
 	}
 	
@@ -97,23 +99,23 @@ public class HunterAndWumpusText {
 			for(int j = 0; j < dungeon[0].length; j++){
 				
 				if(dungeon[i][j].isVisible){
-					if(dungeon[i][j].hasBlood){
-						mapString = mapString + "[B] ";
-					}
-					else if(dungeon[i][j].hasGoop){
-						mapString = mapString + "[G] ";
-					}
-					else if(dungeon[i][j].hasHunter){
-						mapString = mapString + "[O] ";
-					}
-					else if(dungeon[i][j].hasSlime){
-						mapString = mapString + "[S] ";
-					}
-					else if(dungeon[i][j].hasWumpus){
+					if(dungeon[i][j].hasWumpus){
 						mapString = mapString + "[W] ";
 					}
 					else if(dungeon[i][j].hasPit){
 						mapString = mapString + "[P] ";
+					}
+					else if(dungeon[i][j].hasHunter){
+						mapString = mapString + "[O] ";
+					}
+					else if(dungeon[i][j].hasGoop){
+						mapString = mapString + "[G] ";
+					}
+					else if(dungeon[i][j].hasBlood){
+						mapString = mapString + "[B] ";
+					}
+					else if(dungeon[i][j].hasSlime){
+						mapString = mapString + "[S] ";
 					}
 					else{
 						mapString = mapString + "[ ] ";
@@ -204,7 +206,6 @@ public class HunterAndWumpusText {
 
 	public void setWumpus(Room[][] map){
 		
-		Random generator = new Random();
 		int randomRow = generator.nextInt(dungeon.length);
 		int randomCol = generator.nextInt(dungeon[0].length);
 		dungeon[randomRow][randomCol].isVisible = true;
@@ -213,14 +214,47 @@ public class HunterAndWumpusText {
 	
 	public void setBlood(Room[][] map){
 		
+		int wumpusRow=0;
+		int wumpusCol=0;
+		for(int i=0; i<dungeon.length;i++){
+			for(int j=0;j<dungeon[0].length;j++){
+				if(dungeon[i][j].hasWumpus){
+					wumpusRow = i;
+					wumpusCol = j;
+				}
+			}
+		}
 		
+		dungeon[(wumpusRow+2)%boardSize][wumpusCol].isVisible = true;
+		dungeon[(wumpusRow+2)%boardSize][wumpusCol].hasBlood = true;
+		dungeon[wumpusRow][(wumpusCol+2)%boardSize].isVisible = true;
+		dungeon[wumpusRow][(wumpusCol+2)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow+1)%boardSize][wumpusCol].isVisible = true;
+		dungeon[(wumpusRow+1)%boardSize][wumpusCol].hasBlood = true;
+		dungeon[wumpusRow][(wumpusCol+1)%boardSize].isVisible = true;
+		dungeon[wumpusRow][(wumpusCol+1)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow-1+boardSize)%boardSize][wumpusCol].isVisible = true;
+		dungeon[(wumpusRow-1+boardSize)%boardSize][wumpusCol].hasBlood = true;
+		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
+		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow-2+boardSize)%boardSize][wumpusCol].isVisible = true;
+		dungeon[(wumpusRow-2+boardSize)%boardSize][wumpusCol].hasBlood = true;
+		dungeon[wumpusRow][(wumpusCol-2+boardSize)%boardSize].isVisible = true;
+		dungeon[wumpusRow][(wumpusCol-2+boardSize)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow-1)%boardSize][(wumpusCol-1)%boardSize].isVisible = true;
+		dungeon[(wumpusRow-1)%boardSize][(wumpusCol-1)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow+1)%boardSize][(wumpusCol+1)%boardSize].isVisible = true;
+		dungeon[(wumpusRow+1)%boardSize][(wumpusCol+1)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol+1)%boardSize].isVisible = true;
+		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol+1)%boardSize].hasBlood = true;
+		dungeon[(wumpusRow+1)%boardSize][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
+		dungeon[(wumpusRow+1)%boardSize][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
 	}
 	
 	public void setSlimePits(Room[][] map){
 		
 		Random generator = new Random();
-		int randomPitNumber = generator.nextInt((5 - 3) + 1) + 3;
-		//int randomPitNumber = generator.nextInt(3) + 3; //generate a random number between 3 and 5 pits
+		int randomPitNumber = generator.nextInt((5 - 3) + 1) + 3; //generate a random number between 3 and 5 pits
 		int totalPits = 0;
 		
 		while(totalPits<randomPitNumber){
@@ -236,6 +270,35 @@ public class HunterAndWumpusText {
 			totalPits = getTotalPits();
 		}
 	}
+	
+	public void setSlime(Room[][] map){
+		
+		for(int i=0; i<dungeon.length;i++){
+			for(int j=0;j<dungeon[0].length;j++){
+				if(dungeon[i][j].hasPit){
+					dungeon[(i-1+boardSize)%boardSize][j].isVisible = true;
+					dungeon[(i-1+boardSize)%boardSize][j].hasSlime = true;
+					dungeon[i][(j-1+boardSize)%boardSize].isVisible = true;
+					dungeon[i][(j-1+boardSize)%boardSize].hasSlime = true;
+					dungeon[(i+1)%boardSize][j].isVisible = true;
+					dungeon[(i+1)%boardSize][j].hasSlime = true;
+					dungeon[i][(j+1)%boardSize].isVisible = true;
+					dungeon[i][(j+1)%boardSize].hasSlime = true;
+				}
+			}
+		}
+	}
+	
+	public void setGoop(Room[][] map){
+		
+		for(int i=0; i<dungeon.length;i++){
+			for(int j=0;j<dungeon[0].length;j++){
+				if(dungeon[i][j].hasBlood && dungeon[i][j].hasSlime){
+					dungeon[i][j].hasGoop = true;
+				}
+			}
+		}
+	}
 
 	private int getTotalPits() {
 		
@@ -249,12 +312,6 @@ public class HunterAndWumpusText {
 		}
 		return totalPits;
 	}
-
-	private static boolean gameOver() {
-		
-		
-		return true;
-	}
 	
 	public static void move(){
 		
@@ -266,17 +323,17 @@ public class HunterAndWumpusText {
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterRow=(hunterRow-1+boardSize)%boardSize;
 			
-			System.out.println(hunterRow);
+			//System.out.println(hunterRow);
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
-			
 		}
 		
 		else if (direction.equals("down"))
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterRow=(hunterRow+1)%boardSize;
-			System.out.println(hunterRow);
+			
+			//System.out.println(hunterRow);
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
@@ -285,7 +342,8 @@ public class HunterAndWumpusText {
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterCol=(hunterCol+1)%boardSize;
-			System.out.println(hunterCol);
+			
+			//System.out.println(hunterCol);
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
@@ -294,23 +352,19 @@ public class HunterAndWumpusText {
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterCol=(hunterCol-1+boardSize)%boardSize;
-			System.out.println(hunterCol);
+			
+			//System.out.println(hunterCol);
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
-
-		
-		
 	}
 	
 	/* getDirection() prompts the player for a direction and then returns the direction
-	 * that the user wants to go.  It checks that the direction is: up,down,left, or right.
-	 */
+	 * that the user wants to go.  It checks that the direction is: up,down,left, or right.*/
 	public static String getDirection(){
 		
 		Scanner keyboard = new Scanner(System.in);
 		String direction="";
-		
 		
 		System.out.print("Which direction would you like to go? (up, down, left, right): ");
 		direction=keyboard.nextLine();
@@ -327,8 +381,5 @@ public class HunterAndWumpusText {
 		}
 
 		return direction;
-		
 	}
-	
-	
 }
