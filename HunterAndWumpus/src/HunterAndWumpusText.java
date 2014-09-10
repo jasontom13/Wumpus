@@ -207,44 +207,6 @@ public class HunterAndWumpusText {
 		return dungeon[row][col].isVisible;
 	}
 	
-	public static void main(String[] args){
-		
-		HunterAndWumpusText testDung1 = new HunterAndWumpusText();
-		System.out.println(testDung1.toString());
-		String playGameString = "yes";
-			
-		while(playGameString.equals("yes")){
-			move();
-			if (gameOver())
-			{
-				System.out.println("\n" + gameOverMessage() + "\n");
-
-				for(int i=0; i<dungeon.length;i++){
-					for(int j=0;j<dungeon[0].length;j++){
-						dungeon[i][j].isVisible = true;
-					}
-				}
-				System.out.println(testDung1.toString());
-				System.out.println("Would you like to play again?(yes or no)");
-				
-				Scanner keyboard = new Scanner(System.in);
-				playGameString = keyboard.nextLine();
-				
-				if(playGameString.equals("yes")){
-					testDung1 = new HunterAndWumpusText();
-					System.out.println(testDung1.toString());
-				}
-				else{
-					System.out.println("Thanks for playing!");
-				}
-			}
-			else
-			{
-				System.out.println(testDung1.toString());
-			}
-		}
-	}
-	
 	public void setHunter(Room[][] map){
 		
 		while(hunterCount()<1){
@@ -491,7 +453,7 @@ public class HunterAndWumpusText {
 		Scanner keyboard = new Scanner(System.in);
 		String direction="";
 		
-		System.out.print("Which direction would you like to go? Would you like to shoot your arrow? (up, down, left, right, shoot arrow): ");
+		System.out.print("Which direction would you like to go?\nOr would you like to shoot your arrow? (up, down, left, right, shoot arrow): ");
 		direction=keyboard.nextLine();
 		direction=direction.toLowerCase();
 	
@@ -582,4 +544,51 @@ public class HunterAndWumpusText {
 		
 		return message;
 	}
+	
+	public static String playAgain(HunterAndWumpusText testDung1){
+		String playGameString = "yes";
+		System.out.println("\n" + gameOverMessage() + "\n");
+
+		for(int i=0; i<dungeon.length;i++){
+			for(int j=0;j<dungeon[0].length;j++){
+				dungeon[i][j].isVisible = true;
+			}
+		}
+		System.out.println(testDung1.toString());
+		System.out.println("Would you like to play again?(yes or no)");
+		
+		Scanner keyboard = new Scanner(System.in);
+		playGameString = keyboard.nextLine();
+		
+		if(playGameString.equals("yes")){
+			testDung1 = new HunterAndWumpusText();
+			System.out.println(testDung1.toString());
+		}
+		else{
+			System.out.println("Thanks for playing!");
+		}
+		
+		return playGameString;
+	}
+	
+	
+	public static void main(String[] args){
+		
+		HunterAndWumpusText testDung1 = new HunterAndWumpusText();
+		System.out.println(testDung1.toString());
+		String playGameString = "yes";
+			
+		while(playGameString.equals("yes")){
+			move();
+			if (gameOver())
+			{
+				playGameString=playAgain(testDung1);
+			}
+			else
+			{
+				System.out.println(testDung1.toString());
+			}
+		}
+	}
+
 }
