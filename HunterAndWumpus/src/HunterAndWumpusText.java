@@ -28,14 +28,14 @@ public class HunterAndWumpusText {
 		private boolean hasPit;
 		private boolean hasHunter;
 		private boolean isVisible;
-		private final int row;
-		private final int col;
+		//private final int row;
+		//private final int col;
 		
 		/* Room constructor: initializes the room's state to empty */
 		public Room(int row, int col){
 			
-			this.row = row;
-			this.col = col;
+			//this.row = row;
+			//this.col = col;
 			hasBlood = false;
 			hasSlime = false;
 			hasGoop = false;
@@ -59,12 +59,14 @@ public class HunterAndWumpusText {
 	
 	private static Room[][] dungeon;
 	Random generator = new Random();
+	static String arrowDirection;
 	static int boardSize;
 	static int hunterRow;
 	static int hunterCol;
+	static int arrowRow;
+	static int arrowCol;
 	static int wumpusRow;
 	static int wumpusCol;
-	
 	
 	/* HunterAndWumpusText Constructor: This method is used to create the dungeon using
 	 * a predetermined dungeon size and known pit/wumpus/hunter/slime/blood/goop locations.
@@ -128,19 +130,19 @@ public class HunterAndWumpusText {
 				if(dungeon[i][j].isVisible){
 					if(dungeon[i][j].hasHunter){
 						mapString = mapString + "[O] ";
-						if (dungeon[i][j].hasGoop)
+						
+						if (dungeon[i][j].hasGoop && !gameOver())
 						{
 							message="Looks like there's goop on the floor...";
 						}
-						else if (dungeon[i][j].hasBlood)
+						else if (dungeon[i][j].hasBlood && !gameOver())
 						{
 							message="Looks like there's blood on the floor...";
 						}
-						else if (dungeon[i][j].hasSlime)
+						else if (dungeon[i][j].hasSlime && !gameOver())
 						{
 							message="Looks like there's slime on the floor...";
 						}
-						
 					}
 					else if(dungeon[i][j].hasWumpus){
 						mapString = mapString + "[W] ";
@@ -207,28 +209,43 @@ public class HunterAndWumpusText {
 	
 	public static void main(String[] args){
 		
-			HunterAndWumpusText testDung1 = new HunterAndWumpusText();
-			System.out.println(testDung1.toString());
-			int i=0;
+		HunterAndWumpusText testDung1 = new HunterAndWumpusText();
+		System.out.println(testDung1.toString());
+		String playGameString = "yes";
 			
-			while(i<100){
-				move();
-				if (gameOver())
-				{
-					System.out.println(gameOverMessage());
-					break;
+		while(playGameString.equals("yes")){
+			move();
+			if (gameOver())
+			{
+				System.out.println("\n" + gameOverMessage() + "\n");
+
+				for(int i=0; i<dungeon.length;i++){
+					for(int j=0;j<dungeon[0].length;j++){
+						dungeon[i][j].isVisible = true;
+					}
 				}
-				else
-				{
+				System.out.println(testDung1.toString());
+				System.out.println("Would you like to play again?(yes or no)");
+				
+				Scanner keyboard = new Scanner(System.in);
+				playGameString = keyboard.nextLine();
+				
+				if(playGameString.equals("yes")){
+					testDung1 = new HunterAndWumpusText();
 					System.out.println(testDung1.toString());
 				}
+				else{
+					System.out.println("Thanks for playing!");
+				}
 			}
-			
-				
+			else
+			{
+				System.out.println(testDung1.toString());
+			}
+		}
 	}
 	
 	public void setHunter(Room[][] map){
-		
 		
 		while(hunterCount()<1){
 			hunterRow = generator.nextInt(dungeon.length);
@@ -392,7 +409,7 @@ public class HunterAndWumpusText {
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
 		
-		else
+		else if(direction.equals("left"))
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterCol=(hunterCol-1+boardSize)%boardSize;
@@ -401,8 +418,72 @@ public class HunterAndWumpusText {
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
+		
+		else
+		{
+			shootArrow();
+		}
 	}
 	
+	private static void shootArrow() {
+		
+		if (arrowDirection.equals("up"))
+		{
+			arrowRow = (hunterRow-1+boardSize)%boardSize;
+			arrowCol = hunterCol;
+			while(arrowRow != hunterRow){
+				if(dungeon[arrowRow][arrowCol].hasWumpus){
+					break;
+				}
+				else{
+					arrowRow = (arrowRow-1+boardSize)%boardSize;
+				}
+			}
+		}
+		
+		else if (arrowDirection.equals("down"))
+		{
+			arrowRow = (hunterRow+1)%boardSize;
+			arrowCol = hunterCol;
+			while(arrowRow != hunterRow){
+				if(dungeon[arrowRow][arrowCol].hasWumpus){
+					break;
+				}
+				else{
+					arrowRow = (arrowRow+1)%boardSize;
+				}
+			}
+		}
+		
+		else if (arrowDirection.equals("right"))
+		{
+			arrowCol = (hunterCol+1)%boardSize;
+			arrowRow = hunterRow;
+			while(arrowCol != hunterCol){
+				if(dungeon[arrowRow][arrowCol].hasWumpus){
+					break;
+				}
+				else{
+					arrowCol = (arrowCol+1)%boardSize;
+				}
+			}
+		}
+		
+		else
+		{
+			arrowCol = (hunterCol-1+boardSize)%boardSize;
+			arrowRow = hunterRow;
+			while(arrowCol != hunterCol){
+				if(dungeon[arrowRow][arrowCol].hasWumpus){
+					break;
+				}
+				else{
+					arrowCol = (arrowCol-1+boardSize)%boardSize;
+				}
+			}
+		}
+	}
+
 	/* getDirection() prompts the player for a direction and then returns the direction
 	 * that the user wants to go.  It checks that the direction is: up,down,left, or right.*/
 	public static String getDirection(){
@@ -410,18 +491,33 @@ public class HunterAndWumpusText {
 		Scanner keyboard = new Scanner(System.in);
 		String direction="";
 		
-		System.out.print("Which direction would you like to go? (up, down, left, right): ");
+		System.out.print("Which direction would you like to go? Would you like to shoot your arrow? (up, down, left, right, shoot arrow): ");
 		direction=keyboard.nextLine();
 		direction=direction.toLowerCase();
 	
 		
-		while (!direction.equals("up") && !direction.equals("down") && !direction.equals("left") && !direction.equals("right"))
+		while (!direction.equals("up") && !direction.equals("down") && !direction.equals("left") && !direction.equals("right") && !direction.equals("shoot arrow"))
 		{
 		
-			System.out.println("That is not a valid direction, please enter a valid direction.");
-			System.out.print("Which direction would you like to go? (up, down, left, right): ");
+			System.out.println("That is not a valid command, please enter a valid command.");
+			System.out.print("Which direction would you like to go? Would you like to shoot your arrow? (up, down, left, right, shoot arrow): ");
 			direction=keyboard.nextLine();
 			direction=direction.toLowerCase();
+		}
+		
+		if(direction.equals("shoot arrow")){
+			System.out.println("Which direction would you like to shoot the arrow? (up, down, left, right):");
+			arrowDirection = keyboard.nextLine();
+			arrowDirection = arrowDirection.toLowerCase();
+			
+			while (!arrowDirection.equals("up") && !arrowDirection.equals("down") && !arrowDirection.equals("left") && !arrowDirection.equals("right"))
+			{
+			
+				System.out.println("That is not a valid direction, please enter a valid direction.");
+				System.out.print("Which direction would you like to shoot the arrow? (up, down, left, right):");
+				arrowDirection=keyboard.nextLine();
+				arrowDirection=arrowDirection.toLowerCase();
+			}
 		}
 
 		return direction;
@@ -441,6 +537,16 @@ public class HunterAndWumpusText {
 			gameover=true;
 		}
 		
+		else if (arrowRow == wumpusRow && arrowCol == wumpusCol)
+		{
+			gameover=true;
+		}
+		
+		else if (arrowRow == hunterRow && arrowCol == hunterCol)
+		{
+			gameover=true;
+		}
+		
 		return gameover;
 		
 	}
@@ -451,13 +557,24 @@ public class HunterAndWumpusText {
 		
 		if (dungeon[hunterRow][hunterCol].hasWumpus)
 		{
-			message="You've been eaten by the Wumpus. gg";
+			message="YOU LOSE...\nYou've been eaten by the mighty Wumpus. gg.";
 		}
 		
 		else if (dungeon[hunterRow][hunterCol].hasPit)
 		{
-			message="You fell into the pit and died. get wrecked";
+			message="YOU LOSE...\nYou fell into a bottomless pit and died. get wrecked.";
 		}
+		
+		else if (arrowRow == wumpusRow && arrowCol == wumpusCol)
+		{
+			message="YOU WIN!\nYour arrow pierces the Wumpus' heart and slays it! You venture out of the dungeon a hero.";
+		}
+		
+		else if (arrowRow == hunterRow && arrowCol == hunterCol)
+		{
+			message="YOU LOSE...\nYour arrow hits you in the back. That takes skill...too bad you don't live to tell the tale.";
+		}
+		
 		else
 		{
 			message="WHYULOSE?";
