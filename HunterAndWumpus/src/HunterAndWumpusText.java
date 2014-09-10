@@ -71,6 +71,52 @@ public class HunterAndWumpusText {
 	/* HunterAndWumpusText Constructor: This method is used to create the dungeon using
 	 * a predetermined dungeon size and known pit/wumpus/hunter/slime/blood/goop locations.
 	 */
+	public HunterAndWumpusText(int [] fixed){
+		
+		boardSize=10;
+		dungeon = new Room[boardSize][boardSize];
+		
+		for(int i = 0; i < boardSize; i++){
+			for(int j = 0; j < boardSize; j++){
+				dungeon[i][j] = new Room(i, j);
+			}
+		}
+		
+		wumpusRow=fixed[0];
+		wumpusCol=fixed[1];
+		hunterRow=fixed[8];
+		hunterCol=fixed[9];
+		
+		dungeon[fixed[0]][fixed[1]].hasWumpus=true;
+		dungeon[fixed[0]][fixed[1]].isVisible=true;
+		
+		dungeon[fixed[2]][fixed[3]].hasPit=true;
+		dungeon[fixed[2]][fixed[3]].isVisible=true;
+		dungeon[fixed[4]][fixed[5]].hasPit=true;
+		dungeon[fixed[4]][fixed[5]].isVisible=true;
+		dungeon[fixed[6]][fixed[7]].hasPit=true;
+		dungeon[fixed[6]][fixed[7]].isVisible=true;
+		dungeon[fixed[8]][fixed[9]].hasHunter=true;
+		dungeon[fixed[8]][fixed[9]].isVisible=true;
+		
+		setBlood(dungeon);
+		setSlime(dungeon);
+		setGoop(dungeon);
+		dungeon.toString();
+		
+		
+		
+//		setWumpus(dungeon);
+//		setBlood(dungeon);
+//		setSlimePits(dungeon);
+//		setSlime(dungeon);
+//		setGoop(dungeon);
+//		setHunter(dungeon);
+	}
+	
+	/* HunterAndWumpusText Constructor: This method is used to create the dungeon using
+	 * a predetermined dungeon size and known pit/wumpus/hunter/slime/blood/goop locations.
+	 */
 	public HunterAndWumpusText(String[][] map){
 		
 		dungeon = new Room[map.length][map[0].length];
