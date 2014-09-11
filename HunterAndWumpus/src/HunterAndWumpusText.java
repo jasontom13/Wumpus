@@ -14,6 +14,7 @@
  * up, down, left, right.
  */
 
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -28,14 +29,10 @@ public class HunterAndWumpusText {
 		private boolean hasPit;
 		private boolean hasHunter;
 		private boolean isVisible;
-		//private final int row;
-		//private final int col;
 		
 		/* Room constructor: initializes the room's state to empty */
 		public Room(int row, int col){
 			
-			//this.row = row;
-			//this.col = col;
 			hasBlood = false;
 			hasSlime = false;
 			hasGoop = false;
@@ -45,28 +42,17 @@ public class HunterAndWumpusText {
 			isVisible = false;
 		}
 	}
-	
-	/* JASON: I changed randomRow/Col for setHunter() to hunterRow/Col and 
-	 * made hunterRow/Col a global variable so that I could change the hunter's
-	 * position with move(), I also made boardSize global so i could access the 
-	 * size of the board before it got initialized.  I also updated the randompitnumber
-	 * formula so it made it choose a random number between 3-5.  I also changed
-	 * a couple other things, so if something looks different, it was probably me.
-	 * The program should still run fine.  Run it to see how I changed it, all I really
-	 * did was add a loop to keep running move() for testing purposes.  It moves the O
-	 * around with wraparound.
-	 */
-	
-	private static Room[][] dungeon;
+
+	private Room[][] dungeon;
 	Random generator = new Random();
-	static String arrowDirection;
-	static int boardSize;
-	static int hunterRow;
-	static int hunterCol;
-	static int arrowRow;
-	static int arrowCol;
-	static int wumpusRow;
-	static int wumpusCol;
+	String arrowDirection;
+	int boardSize;
+	int hunterRow;
+	int hunterCol;
+	int arrowRow;
+	int arrowCol;
+	int wumpusRow;
+	int wumpusCol;
 	
 	/* HunterAndWumpusText Constructor: This method is used to create the dungeon using
 	 * a predetermined dungeon size and known pit/wumpus/hunter/slime/blood/goop locations.
@@ -84,8 +70,8 @@ public class HunterAndWumpusText {
 		
 		wumpusRow=fixed[0];
 		wumpusCol=fixed[1];
-		hunterRow=fixed[8];
-		hunterCol=fixed[9];
+		hunterRow=fixed[10];
+		hunterCol=fixed[11];
 		
 		dungeon[fixed[0]][fixed[1]].hasWumpus=true;
 		dungeon[fixed[0]][fixed[1]].isVisible=true;
@@ -96,44 +82,20 @@ public class HunterAndWumpusText {
 		dungeon[fixed[4]][fixed[5]].isVisible=true;
 		dungeon[fixed[6]][fixed[7]].hasPit=true;
 		dungeon[fixed[6]][fixed[7]].isVisible=true;
-		dungeon[fixed[8]][fixed[9]].hasHunter=true;
+		dungeon[fixed[8]][fixed[9]].hasPit=true;
 		dungeon[fixed[8]][fixed[9]].isVisible=true;
+		
+		dungeon[fixed[10]][fixed[11]].hasHunter=true;
+		dungeon[fixed[10]][fixed[11]].isVisible=true;
+		dungeon[7][4].isVisible=true;
 		
 		setBlood(dungeon);
 		setSlime(dungeon);
 		setGoop(dungeon);
 		dungeon.toString();
-		
-		
-		
-//		setWumpus(dungeon);
-//		setBlood(dungeon);
-//		setSlimePits(dungeon);
-//		setSlime(dungeon);
-//		setGoop(dungeon);
-//		setHunter(dungeon);
+	
 	}
 	
-	/* HunterAndWumpusText Constructor: This method is used to create the dungeon using
-	 * a predetermined dungeon size and known pit/wumpus/hunter/slime/blood/goop locations.
-	 */
-	public HunterAndWumpusText(String[][] map){
-		
-		dungeon = new Room[map.length][map[0].length];
-		
-		for(int i=0; i<map.length;i++){
-			for(int j=0; j<map[0].length;j++){
-				dungeon[i][j] = new Room(i, j);
-			}
-		}
-		
-		setWumpus(dungeon);
-		setBlood(dungeon);
-		setSlimePits(dungeon);
-		setSlime(dungeon);
-		setGoop(dungeon);
-		setHunter(dungeon);
-	}
 	
 	/* HunterAndWumpusText Constructor: This method is used to create a dungeon using
 	 * user input for dungeon size and randomized pit/wumpus/hunter/slime/blood/goop locations.
@@ -143,11 +105,18 @@ public class HunterAndWumpusText {
 		Scanner keyBoard = new Scanner(System.in);
 	
 		System.out.println("Enter dungeon size 10 or greater:");
-		boardSize = keyBoard.nextInt();
-		while(boardSize < 10){
-			System.out.println("Invalid size. Please enter a number 10 or greater:");
+		try {
 			boardSize = keyBoard.nextInt();
+			while(boardSize < 10){
+				System.out.println("Invalid size. Please enter a number 10 or greater:");
+				boardSize = keyBoard.nextInt();
+			}
+		} catch (InputMismatchException e)
+		{
+			System.out.println("NAN dumbass.");
+			System.exit(1);
 		}
+	
 		
 		dungeon = new Room[boardSize][boardSize];
 		
@@ -213,7 +182,6 @@ public class HunterAndWumpusText {
 					mapString = mapString + "[X] ";
 				}
 			}
-			
 			mapString = mapString + "\n";
 		}
 		
@@ -255,7 +223,7 @@ public class HunterAndWumpusText {
 	
 	public void setHunter(Room[][] map){
 		
-		while(hunterCount()<1){
+		while(getHunterCount()<1){
 			hunterRow = generator.nextInt(dungeon.length);
 			hunterCol = generator.nextInt(dungeon[0].length);
 			if(dungeon[hunterRow][hunterCol].hasWumpus 
@@ -272,7 +240,7 @@ public class HunterAndWumpusText {
 		}
 	}
 	
-	private int hunterCount() {
+	public int getHunterCount() {
 		int hunterCount = 0;
 		for(int i=0; i<dungeon.length;i++){
 			for(int j=0;j<dungeon[0].length;j++){
@@ -288,35 +256,22 @@ public class HunterAndWumpusText {
 		
 		wumpusRow = generator.nextInt(dungeon.length);
 		wumpusCol = generator.nextInt(dungeon[0].length);
-		dungeon[wumpusRow][wumpusCol].isVisible = true;
 		dungeon[wumpusRow][wumpusCol].hasWumpus = true;
 	}
 	
 	public void setBlood(Room[][] map){
 		
-		dungeon[(wumpusRow+2)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow+2)%boardSize][wumpusCol].hasBlood = true;
-		dungeon[(wumpusRow+1)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow+1)%boardSize][wumpusCol].hasBlood = true;
-		dungeon[wumpusRow][(wumpusCol+2)%boardSize].isVisible = true;
 		dungeon[wumpusRow][(wumpusCol+2)%boardSize].hasBlood = true;
-		dungeon[wumpusRow][(wumpusCol+1)%boardSize].isVisible = true;
 		dungeon[wumpusRow][(wumpusCol+1)%boardSize].hasBlood = true;
-		dungeon[(wumpusRow-1+boardSize)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow-1+boardSize)%boardSize][wumpusCol].hasBlood = true;
-		dungeon[(wumpusRow-2+boardSize)%boardSize][wumpusCol].isVisible = true;
 		dungeon[(wumpusRow-2+boardSize)%boardSize][wumpusCol].hasBlood = true;
-		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
 		dungeon[wumpusRow][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
-		dungeon[wumpusRow][(wumpusCol-2+boardSize)%boardSize].isVisible = true;
 		dungeon[wumpusRow][(wumpusCol-2+boardSize)%boardSize].hasBlood = true;
-		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
 		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
-		dungeon[(wumpusRow+1)%boardSize][(wumpusCol+1)%boardSize].isVisible = true;
 		dungeon[(wumpusRow+1)%boardSize][(wumpusCol+1)%boardSize].hasBlood = true;
-		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol+1)%boardSize].isVisible = true;
 		dungeon[(wumpusRow-1+boardSize)%boardSize][(wumpusCol+1)%boardSize].hasBlood = true;
-		dungeon[(wumpusRow+1)%boardSize][(wumpusCol-1+boardSize)%boardSize].isVisible = true;
 		dungeon[(wumpusRow+1)%boardSize][(wumpusCol-1+boardSize)%boardSize].hasBlood = true;
 	}
 	
@@ -333,7 +288,6 @@ public class HunterAndWumpusText {
 				//do nothing, generate a new random location
 			}
 			else{
-				dungeon[randomRow][randomCol].isVisible = true;
 				dungeon[randomRow][randomCol].hasPit = true;
 			}
 			totalPits = getTotalPits();
@@ -345,13 +299,9 @@ public class HunterAndWumpusText {
 		for(int i=0; i<dungeon.length;i++){
 			for(int j=0;j<dungeon[0].length;j++){
 				if(dungeon[i][j].hasPit){
-					dungeon[(i-1+boardSize)%boardSize][j].isVisible = true;
 					dungeon[(i-1+boardSize)%boardSize][j].hasSlime = true;
-					dungeon[i][(j-1+boardSize)%boardSize].isVisible = true;
 					dungeon[i][(j-1+boardSize)%boardSize].hasSlime = true;
-					dungeon[(i+1)%boardSize][j].isVisible = true;
 					dungeon[(i+1)%boardSize][j].hasSlime = true;
-					dungeon[i][(j+1)%boardSize].isVisible = true;
 					dungeon[i][(j+1)%boardSize].hasSlime = true;
 				}
 			}
@@ -369,7 +319,7 @@ public class HunterAndWumpusText {
 		}
 	}
 
-	private int getTotalPits() {
+	public int getTotalPits() {
 		
 		int totalPits = 0;
 		for(int i=0; i<dungeon.length;i++){
@@ -382,58 +332,52 @@ public class HunterAndWumpusText {
 		return totalPits;
 	}
 	
-	public static void move(){
+	public void move(String direction){
 		
-		String direction;
-		direction=getDirection();
-		
-		if (direction.equals("up"))
+		if (direction.toLowerCase().equals("up"))
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterRow=(hunterRow-1+boardSize)%boardSize;
-			
-			//System.out.println(hunterRow);
+
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
 		
-		else if (direction.equals("down"))
+		else if (direction.toLowerCase().equals("down"))
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterRow=(hunterRow+1)%boardSize;
-			
-			//System.out.println(hunterRow);
+
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
 		
-		else if (direction.equals("right"))
+		else if (direction.toLowerCase().equals("right"))
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterCol=(hunterCol+1)%boardSize;
-			
-			//System.out.println(hunterCol);
+
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
 		
-		else if(direction.equals("left"))
+		else if(direction.toLowerCase().equals("left"))
 		{
 			dungeon[hunterRow][hunterCol].hasHunter = false;
 			hunterCol=(hunterCol-1+boardSize)%boardSize;
-			
-			//System.out.println(hunterCol);
+
 			dungeon[hunterRow][hunterCol].isVisible = true;
 			dungeon[hunterRow][hunterCol].hasHunter = true;
 		}
 		
-		else
+		else if(direction.toLowerCase().equals("shoot arrow"))
 		{
-			shootArrow();
+			shootArrow(getArrowDirection());
 		}
+		
 	}
 	
-	private static void shootArrow() {
+	public void shootArrow(String arrowDirection) {
 		
 		if (arrowDirection.equals("up"))
 		{
@@ -494,7 +438,8 @@ public class HunterAndWumpusText {
 
 	/* getDirection() prompts the player for a direction and then returns the direction
 	 * that the user wants to go.  It checks that the direction is: up,down,left, or right.*/
-	public static String getDirection(){
+	public String getDirection(){
+		
 		
 		Scanner keyboard = new Scanner(System.in);
 		String direction="";
@@ -512,26 +457,30 @@ public class HunterAndWumpusText {
 			direction=keyboard.nextLine();
 			direction=direction.toLowerCase();
 		}
-		
-		if(direction.equals("shoot arrow")){
+	
+		return direction;
+	}
+	
+	public String getArrowDirection() {
+		Scanner keyboard = new Scanner(System.in);
+
 			System.out.println("Which direction would you like to shoot the arrow? (up, down, left, right):");
 			arrowDirection = keyboard.nextLine();
 			arrowDirection = arrowDirection.toLowerCase();
 			
 			while (!arrowDirection.equals("up") && !arrowDirection.equals("down") && !arrowDirection.equals("left") && !arrowDirection.equals("right"))
 			{
-			
 				System.out.println("That is not a valid direction, please enter a valid direction.");
 				System.out.print("Which direction would you like to shoot the arrow? (up, down, left, right):");
 				arrowDirection=keyboard.nextLine();
 				arrowDirection=arrowDirection.toLowerCase();
 			}
-		}
-
-		return direction;
+			
+			return arrowDirection;
 	}
 	
-	public static boolean gameOver(){
+	
+	public boolean gameOver(){
 		
 		boolean gameover=false;
 		
@@ -559,7 +508,7 @@ public class HunterAndWumpusText {
 		
 	}
 	
-	public static String gameOverMessage(){
+	public String gameOverMessage(){
 		
 		String message = "";
 		
@@ -591,7 +540,7 @@ public class HunterAndWumpusText {
 		return message;
 	}
 	
-	public static String playAgain(HunterAndWumpusText testDung1){
+	public String playAgain(HunterAndWumpusText testDung1){
 		String playGameString = "yes";
 		System.out.println("\n" + gameOverMessage() + "\n");
 
@@ -606,14 +555,6 @@ public class HunterAndWumpusText {
 		Scanner keyboard = new Scanner(System.in);
 		playGameString = keyboard.nextLine();
 		
-		if(playGameString.equals("yes")){
-			testDung1 = new HunterAndWumpusText();
-			System.out.println(testDung1.toString());
-		}
-		else{
-			System.out.println("Thanks for playing!");
-		}
-		
 		return playGameString;
 	}
 	
@@ -625,16 +566,22 @@ public class HunterAndWumpusText {
 		String playGameString = "yes";
 			
 		while(playGameString.equals("yes")){
-			move();
-			if (gameOver())
+			testDung1.move(testDung1.getDirection());
+			if (testDung1.gameOver())
 			{
-				playGameString=playAgain(testDung1);
+				playGameString=testDung1.playAgain(testDung1);
+				if(playGameString.equals("yes")){
+					testDung1 = new HunterAndWumpusText();
+					System.out.println(testDung1.toString());
+				}						
 			}
 			else
 			{
 				System.out.println(testDung1.toString());
 			}
 		}
+		
+		System.out.println("Thanks for playing!");
 	}
 
 }
