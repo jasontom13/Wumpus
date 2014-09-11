@@ -7,10 +7,12 @@
  * Description: This class is used to test a static version of the HunterAndWumpusText pre-made
  * dungeon.  
  */
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+//Class containing all the @Test methods for HunterAndWumpusText
 
 public class HunterAndWumpusTextTest {
 
@@ -31,7 +33,7 @@ public class HunterAndWumpusTextTest {
 		assertTrue(testDung.isVisible(6,4));
 		
 		assertTrue(testDung.hasWumpus(1,7));
-		//assertFalse(testDung.isVisible(1,7));
+		assertFalse(testDung.isVisible(1,7));
 		
 		assertTrue(testDung.hasBlood(0,6));
 		assertTrue(testDung.hasBlood(0,7));
@@ -43,23 +45,23 @@ public class HunterAndWumpusTextTest {
 		assertTrue(testDung.hasBlood(2,8));
 		assertTrue(testDung.hasBlood(3,7));
 		assertTrue(testDung.hasBlood(9,7));
-		//assertFalse(testDung.isVisible(9,7));
+		assertFalse(testDung.isVisible(9,7));
 		
 		assertTrue(testDung.hasPit(0,9));
 		assertTrue(testDung.hasPit(6,2));
 		assertTrue(testDung.hasPit(9,3));
 		assertTrue(testDung.hasPit(6,8));
-		//assertFalse(testDung.isVisible(6,8));
+		assertFalse(testDung.isVisible(6,8));
 		
 		assertTrue(testDung.hasSlime(0,0));
 		assertTrue(testDung.hasSlime(9,9));
-		//assertFalse(testDung.isVisible(9,9));
+		assertFalse(testDung.isVisible(9,9));
 	
 		assertTrue(testDung.hasSlime(5,2));
 		assertTrue(testDung.hasSlime(7,2));
 		assertTrue(testDung.hasSlime(6,3));
 		assertTrue(testDung.hasSlime(6,1));
-		//assertFalse(testDung.isVisible(6,1));
+		assertFalse(testDung.isVisible(6,1));
 		
 		assertTrue(testDung.hasSlime(9,2));
 		assertTrue(testDung.hasSlime(9,4));
@@ -73,7 +75,7 @@ public class HunterAndWumpusTextTest {
 		
 		assertTrue(testDung.hasGoop(0,8));
 		assertTrue(testDung.hasGoop(1,9));
-		//assertFalse(testDung.isVisible(1,9));
+		assertFalse(testDung.isVisible(1,9));
 		
 		/* Testing the movement of the Hunter from the starting position (6,4) */
 		
